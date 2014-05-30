@@ -36,6 +36,7 @@ public class MusicQuiz extends JavaPlugin implements Listener
 	
 	Scoreboard board;
 	Scoreboard board2;
+	Scoreboard board3;
 	
 	int playersNumber;
 	int playersMax = 16;
@@ -60,8 +61,8 @@ public class MusicQuiz extends JavaPlugin implements Listener
 		pm.registerEvents(this, this);	
 		getConfig().options().copyDefaults(true);
 		saveConfig();
-			
-		 
+		
+		
 	}
 
 
@@ -89,20 +90,15 @@ public class MusicQuiz extends JavaPlugin implements Listener
 						sender.sendMessage(ChatColor.RED+" - /mquiz leave");
 						sender.sendMessage(ChatColor.RED+" - /mquiz setminplayers");
 						sender.sendMessage(ChatColor.RED+" - /mquiz setstart");
-
+						sender.sendMessage(ChatColor.RED+" - /mquiz addmusic");
 						
 				}
 				else
 				{
 				if(args[0].equalsIgnoreCase("join"))
 				{
-					if(cooldown == false)
 					{
-						sender.sendMessage(PREFIX +ChatColor.RED+  "Erreur : La partie est déjà lancée");
-					}
-					else
-					{
-					if((players.contains((Player)sender)))
+					if((players.contains((Player)sender)) && forceStart == true)
 					{
 						sender.sendMessage(PREFIX +ChatColor.RED+ "Erreur : tu es deja en partie");
 						
@@ -153,6 +149,46 @@ public class MusicQuiz extends JavaPlugin implements Listener
 								forceStart = false;
 							}
 						}}
+				}
+				if(args[0].equalsIgnoreCase("leave"))
+				{
+					if(players.contains((Player) sender))
+					{
+					playersNumber--;
+					if(playersNumber < 2)
+					{
+						
+						ScoreboardManager manager2 = Bukkit.getScoreboardManager();
+						board2 = manager2.getNewScoreboard();
+						final Objective objective2 = board.registerNewObjective("Null", "Null");
+						for(Player p : players)
+						{
+							objective.setDisplayName("");
+							objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+							p.setScoreboard(board2);
+							p.sendMessage(PREFIX + ChatColor.RED+"La partie a été supprimée car il ne reste plus qu'un joueur.");
+						}
+						Bukkit.getScheduler().runTaskLater(this, new Runnable() 
+						{
+							
+							@Override
+							public void run() 
+							{
+								players.clear();
+								playersNumber = 0;
+								Bukkit.getScheduler().cancelAllTasks();
+								
+							}
+						}, 10);
+					}
+					else
+					{
+						players.remove((Player) sender);
+					}
+				}else
+				{
+					sender.sendMessage(PREFIX+ChatColor.RED+"Erreur : Vous n'etes pas dans la partie.");
+				}
 				}
 				if(args[0].equalsIgnoreCase("start")){
 					if(start == true)
@@ -208,7 +244,6 @@ public class MusicQuiz extends JavaPlugin implements Listener
 					}
 				}
 				if(args[0].equalsIgnoreCase("addmusic")){
-					
 					
 					if(args.length == 2 && !args[1].endsWith(".nbs")){
 							int num_musique;
