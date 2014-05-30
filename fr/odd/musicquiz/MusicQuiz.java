@@ -97,12 +97,12 @@ public class MusicQuiz extends JavaPlugin implements Listener
 				{
 				if(args[0].equalsIgnoreCase("join"))
 				{
-					{
+					
 					if((players.contains((Player)sender)) && forceStart == true)
 					{
 						sender.sendMessage(PREFIX +ChatColor.RED+ "Erreur : tu es deja en partie");
 						
-					}
+					return false;}
 					else
 					{
 						playersNumber++;
@@ -149,7 +149,7 @@ public class MusicQuiz extends JavaPlugin implements Listener
 								forceStart = false;
 							}
 						}}
-				}
+				
 				if(args[0].equalsIgnoreCase("leave"))
 				{
 					if(players.contains((Player) sender))
@@ -202,16 +202,16 @@ public class MusicQuiz extends JavaPlugin implements Listener
 						secondes = getConfig().getInt("Cooldown");
 						if(secondes < 5)
 						{
-							sender.sendMessage(PREFIX +ChatColor.RED+  "Erreur : Le cooldown n'a pas �t� d�fini : /mquiz setstart <num�ro>");
+							sender.sendMessage(PREFIX +ChatColor.RED+  "Erreur : Le cooldown n'a pas été défini : /mquiz setstart <numéro>");
 						}else{
 						start = false;
 						for(Player p : players){	
-						p.sendMessage(PREFIX +ChatColor.GREEN+  "La partie va commancer dans : "+getConfig().getInt("Cooldown")+" secondes.");
+						p.sendMessage(PREFIX +ChatColor.GREEN+  "La partie va commencer dans : "+getConfig().getInt("Cooldown")+" secondes.");
 						}
 						Bukkit.getScheduler().cancelAllTasks();
 						secondes = getConfig().getInt("Cooldown");
 							if(secondes < 5){
-								Bukkit.broadcastMessage(PREFIX +ChatColor.RED+ "Erreur : Le cooldown qui est affich� dans le fichi� de config est inf�ieur � 5.");
+								Bukkit.broadcastMessage(PREFIX +ChatColor.RED+ "Erreur : Le cooldown qui est affiché dans le fichié de config est inféieur é 5.");
 							}else{
 							Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 								
@@ -278,24 +278,24 @@ public class MusicQuiz extends JavaPlugin implements Listener
 						sender.sendMessage(PREFIX +ChatColor.GREEN+ "Le cooldown a bien été changé à "+secondes+" secondes.");
 						
 					}}else{
-						sender.sendMessage(PREFIX +ChatColor.RED+ "Erreur : Veuillez entrer un numéro sup�rieur � 4.");
+						sender.sendMessage(PREFIX +ChatColor.RED+ "Erreur : Veuillez entrer un numéro supérieur é 4.");
 					}
 				}else{
-					sender.sendMessage(PREFIX +ChatColor.RED+  "Erreur : Le cooldown ne peut pas �tre modifi� lorsque la partie � d�j� d�but�.");}
+					sender.sendMessage(PREFIX +ChatColor.RED+  "Erreur : Le cooldown ne peut pas étre modifié lorsque la partie é déjé débuté.");}
 				}
 				
 				
 				if(args[0].equalsIgnoreCase("setminplayers")){
 					if(args.length == 2){
 						if(Integer.parseInt(args[1]) < 2 || Integer.parseInt(args[1]) > 200){
-							sender.sendMessage(PREFIX +ChatColor.RED+  "Erreur : Le num�ro entré n'est pas valide : "+args[1]+" < 2 ou > 200 joueurs");
+							sender.sendMessage(PREFIX +ChatColor.RED+  "Erreur : Le numéro entré n'est pas valide : "+args[1]+" < 2 ou > 200 joueurs");
 						}else{
 							playersAutostart = Integer.parseInt(args[1]);
 							getConfig().set("autostart_players", playersAutostart);
 							saveConfig();
 							sender.sendMessage(PREFIX +ChatColor.GREEN+  "Le nombre minimum de joueurs a bien été changé à "+playersAutostart+" joueurs.");
 						}}else{
-							sender.sendMessage(PREFIX +ChatColor.RED+  "Erreur : Veuillez entrer un num&ro sup&rieur à 1.");
+							sender.sendMessage(PREFIX +ChatColor.RED+  "Erreur : Veuillez entrer un numéro sup&rieur à 1.");
 						}
 					
 				}
