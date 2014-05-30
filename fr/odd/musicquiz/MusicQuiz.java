@@ -213,7 +213,7 @@ public class MusicQuiz extends JavaPlugin implements Listener
 					if(args.length == 2 && !args[1].endsWith(".nbs")){
 							int num_musique;
 							
-							num_musique = getConfig().getInt("Num_de_la_derniere_musique_ajoutee");
+							num_musique = getConfig().getInt("Numero_musique");
 							
 							num_musique++;
 							getConfig().set("Numero_musique", num_musique);
