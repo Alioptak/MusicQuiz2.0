@@ -34,15 +34,18 @@ import com.xxmicloxx.NoteBlockAPI.SongPlayer;
 public class MusicQuiz extends JavaPlugin implements Listener
 {
 	
-	Scoreboard board;
-	Scoreboard board2;
-	Scoreboard board3;
+	static Scoreboard board;
+	static Scoreboard board2;
+	static Scoreboard board3;
 	
 	int playersNumber;
 	int playersMax = 16;
 	int deco;	
 	int secondes;
 	int playersAutostart;
+	
+	static ScoreboardManager manager;
+	static Objective objective;
 	
 	boolean start = true;
 	boolean cooldown = true;
@@ -74,9 +77,9 @@ public class MusicQuiz extends JavaPlugin implements Listener
 
 		if(cmd.getName().equalsIgnoreCase("mquiz"))
 		{
-			ScoreboardManager manager = Bukkit.getScoreboardManager();
-			board = manager.getNewScoreboard();
-			final Objective objective = board.registerNewObjective("Test", "Test2");
+			 manager = Bukkit.getScoreboardManager();
+			 board = manager.getNewScoreboard();
+			objective = board.registerNewObjective("Test", "Test2");
 			if(sender instanceof Player)
 			{
 				if(args.length < 1)
@@ -98,7 +101,7 @@ public class MusicQuiz extends JavaPlugin implements Listener
 				if(args[0].equalsIgnoreCase("join"))
 				{
 					
-					if((players.contains((Player)sender)) && forceStart == true)
+					if((players.contains((Player)sender)) && forceStart == true || players.contains((Player) sender))
 					{
 						sender.sendMessage(PREFIX +ChatColor.RED+ "Erreur : tu es deja en partie");
 						
@@ -117,8 +120,7 @@ public class MusicQuiz extends JavaPlugin implements Listener
 							Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() 
 							{
 								
-								@SuppressWarnings("deprecation")
-								@Override
+								
 								public void run() 
 								{
 									for(Player p : players)
@@ -135,6 +137,26 @@ public class MusicQuiz extends JavaPlugin implements Listener
 							players.add((Player) sender);
 							
 							playersAutostart = getConfig().getInt("autostart_players");
+					
+							if(playersNumber >= playersAutostart){
+								if(start == true){
+									secondes = getConfig().getInt("Cooldown");
+									if(secondes >= 5){
+									
+										Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+												@Override
+												public void run() {
+													if(playersNumber >= playersAutostart){
+														
+														for(Player p : players){
+															p.sendMessage(PREFIX +ChatColor.GREEN+  "La partie va commencer dans : "+getConfig().getInt("Cooldown")+" secondes.");
+														}
+														autostart();
+														}
+												}}
+										, 600);
+							}
+							
 							
 							if(start == false)
 							{
@@ -148,7 +170,7 @@ public class MusicQuiz extends JavaPlugin implements Listener
 							{
 								forceStart = false;
 							}
-						}}
+				}}}}
 				
 				if(args[0].equalsIgnoreCase("leave"))
 				{
@@ -204,7 +226,6 @@ public class MusicQuiz extends JavaPlugin implements Listener
 						{
 							sender.sendMessage(PREFIX +ChatColor.RED+  "Erreur : Le cooldown n'a pas été défini : /mquiz setstart <numéro>");
 						}else{
-						start = false;
 						for(Player p : players){	
 						p.sendMessage(PREFIX +ChatColor.GREEN+  "La partie va commencer dans : "+getConfig().getInt("Cooldown")+" secondes.");
 						}
@@ -213,31 +234,8 @@ public class MusicQuiz extends JavaPlugin implements Listener
 							if(secondes < 5){
 								Bukkit.broadcastMessage(PREFIX +ChatColor.RED+ "Erreur : Le cooldown qui est affiché dans le fichié de config est inféieur é 5.");
 							}else{
-							Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-								
-								@Override
-								public void run() {
-										//ici scoreboard
-									objective.setDisplayName(ChatColor.GRAY+"Mquiz commence dans : " +ChatColor.GOLD+ secondes+"s");
-									secondes--;
-									objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-									Score score = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GOLD + "Joueurs :"));
-									score.setScore(playersNumber);
-									for(Player p : players){
-										p.setScoreboard(board);
-									}
-									if(secondes < 0)
-									{
-										Bukkit.getScheduler().cancelAllTasks();
-										for(Player p : players)
-										{
-											p.sendMessage(PREFIX +ChatColor.GREEN+  "La partie vient de débuter! Bon jeu.");
-											objective.setDisplayName(ChatColor.RED + "C'est parti !");
-										}
-									}
-								}
-							}, 0, 20);
-						}
+								autostart();
+							}
 						}
 					}}else{
 						sender.sendMessage(PREFIX +ChatColor.RED+ "La partie est déjà lancée");
@@ -339,11 +337,36 @@ public class MusicQuiz extends JavaPlugin implements Listener
 		  sp.setPlaying(true);
 	  }
 	  
-	 }	
+	 }
 	
 	
+	
+		public void autostart(){
+Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+	
+	@Override
+	public void run() {
+		start = false;
+		objective.setDisplayName(ChatColor.GRAY+"Mquiz commence dans : " +ChatColor.GOLD+ secondes+"s");
+		secondes--;
+		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+		Score score = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GOLD + "Joueurs :"));
+		score.setScore(playersNumber);
+		for(Player p : players){
+			p.setScoreboard(board);
+		}
+		if(secondes < 0)
+		{
+			Bukkit.getScheduler().cancelAllTasks();
+			for(Player p : players)
+			{
+				p.sendMessage(PREFIX +ChatColor.GREEN+  "La partie vient de débuter! Bon jeu.");
+				objective.setDisplayName(ChatColor.RED + "C'est parti !");
+			}
+		}
 	}
-		
+}, 0, 20);}}
+
 
 		
 
